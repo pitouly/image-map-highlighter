@@ -1,4 +1,5 @@
 .map-container {
+  background-size: cover;
   position: relative; }
   .map-container canvas {
     position: absolute; }
