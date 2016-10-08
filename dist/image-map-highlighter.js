@@ -169,6 +169,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            return map;
 	        }
+
+	        /**
+	         * Clear the canvas.
+	         *
+	         * @param {HTMLCanvasElement} canvas
+	         * @private
+	         */
+
 	    }, {
 	        key: '_clearHighlights',
 	        value: function _clearHighlights(canvas) {
