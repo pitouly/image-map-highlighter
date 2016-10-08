@@ -1,0 +1,7 @@
+.map-container {
+  position: relative; }
+  .map-container canvas {
+    position: absolute; }
+  .map-container img {
+    opacity: 0;
+    position: absolute; }
