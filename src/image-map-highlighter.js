@@ -32,20 +32,14 @@ class ImageMapHighlighter {
             for (var i = 0; i < map.areas.length; i++) {
                 let area = map.areas[i];
 
-                let coords = area.coords.split(',').map(coord => parseInt(coord));
-                let shape = area.shape;
-
-                this._drawHighlight(canvas, shape, coords);
+                this._drawHighlightByArea(canvas, area);
             }
         } else {
             // Animate the canvas accordingly every time we hover over an image
             // mapping.
             map.addEventListener('mouseover', event => {
-                let coords = event.target.coords.split(',').map(coord => parseInt(coord));
-                let shape = event.target.shape;
-
                 this._clearHighlights(canvas);
-                this._drawHighlight(canvas, shape, coords);
+                this._drawHighlightByArea(canvas, event.target);
             });
 
             // Clear the canvas when we hover off a mapping.
@@ -130,7 +124,21 @@ class ImageMapHighlighter {
     }
 
     /**
-     * Draw the map area co-ordinates onto the provided HTM canvas element.
+     * Draw the map area co-ordinates onto the provided HTML canvas element.
+     *
+     * @param {HTMLCanvasElement} canvas
+     * @param {HTMLAreaElement} area
+     * @private
+     */
+    _drawHighlightByArea(canvas, area) {
+        let coords = area.coords.split(',').map(coord => parseInt(coord));
+        let shape = area.shape;
+
+        this._drawHighlight(canvas, shape, coords);
+    }
+
+    /**
+     * Draw a highlight onto the provided HTML canvas element.
      *
      * @param {HTMLCanvasElement} canvas
      * @param {String} shape

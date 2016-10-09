@@ -102,24 +102,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                for (var i = 0; i < map.areas.length; i++) {
 	                    var area = map.areas[i];
 
-	                    var coords = area.coords.split(',').map(function (coord) {
-	                        return parseInt(coord);
-	                    });
-	                    var shape = area.shape;
-
-	                    this._drawHighlight(canvas, shape, coords);
+	                    this._drawHighlightByArea(canvas, area);
 	                }
 	            } else {
 	                // Animate the canvas accordingly every time we hover over an image
 	                // mapping.
 	                map.addEventListener('mouseover', function (event) {
-	                    var coords = event.target.coords.split(',').map(function (coord) {
-	                        return parseInt(coord);
-	                    });
-	                    var shape = event.target.shape;
-
 	                    _this._clearHighlights(canvas);
-	                    _this._drawHighlight(canvas, shape, coords);
+	                    _this._drawHighlightByArea(canvas, event.target);
 	                });
 
 	                // Clear the canvas when we hover off a mapping.
@@ -217,7 +207,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        /**
-	         * Draw the map area co-ordinates onto the provided HTM canvas element.
+	         * Draw the map area co-ordinates onto the provided HTML canvas element.
+	         *
+	         * @param {HTMLCanvasElement} canvas
+	         * @param {HTMLAreaElement} area
+	         * @private
+	         */
+
+	    }, {
+	        key: '_drawHighlightByArea',
+	        value: function _drawHighlightByArea(canvas, area) {
+	            var coords = area.coords.split(',').map(function (coord) {
+	                return parseInt(coord);
+	            });
+	            var shape = area.shape;
+
+	            this._drawHighlight(canvas, shape, coords);
+	        }
+
+	        /**
+	         * Draw a highlight onto the provided HTML canvas element.
 	         *
 	         * @param {HTMLCanvasElement} canvas
 	         * @param {String} shape
