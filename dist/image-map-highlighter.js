@@ -63,11 +63,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	var ImageMapHighlighter = function () {
 	    /**
 	     * @param {HTMLImageElement} element
+	     * @param {Object} options
 	     */
 	    function ImageMapHighlighter(element) {
+	        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 	        _classCallCheck(this, ImageMapHighlighter);
 
 	        this.element = element;
+	        this.options = Object.assign({}, this._getDefaultOptions(), options);
 	    }
 
 	    /**
@@ -94,21 +98,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	            container.appendChild(this.element);
 	            container.insertBefore(canvas, this.element);
 
-	            // Animate the canvas accordingly every time we hover over an image
-	            // mapping.
-	            map.addEventListener('mouseover', function (event) {
-	                var coords = event.target.coords.split(',').map(function (coord) {
-	                    return parseInt(coord);
+	            if (this.options.alwaysOn) {
+	                for (var i = 0; i < map.areas.length; i++) {
+	                    var area = map.areas[i];
+
+	                    var coords = area.coords.split(',').map(function (coord) {
+	                        return parseInt(coord);
+	                    });
+	                    var shape = area.shape;
+
+	                    this._drawHighlight(canvas, shape, coords);
+	                }
+	            } else {
+	                // Animate the canvas accordingly every time we hover over an image
+	                // mapping.
+	                map.addEventListener('mouseover', function (event) {
+	                    var coords = event.target.coords.split(',').map(function (coord) {
+	                        return parseInt(coord);
+	                    });
+	                    var shape = event.target.shape;
+
+	                    _this._clearHighlights(canvas);
+	                    _this._drawHighlight(canvas, shape, coords);
 	                });
-	                var shape = event.target.shape;
 
-	                _this._drawHighlight(canvas, shape, coords);
-	            });
-
-	            // Clear the canvas when we hover off a mapping.
-	            map.addEventListener('mouseout', function (event) {
-	                _this._clearHighlights(canvas);
-	            });
+	                // Clear the canvas when we hover off a mapping.
+	                map.addEventListener('mouseout', function (event) {
+	                    _this._clearHighlights(canvas);
+	                });
+	            }
+	        }
+	    }, {
+	        key: '_getDefaultOptions',
+	        value: function _getDefaultOptions() {
+	            return {
+	                fill: true,
+	                fillColor: '000000',
+	                fillOpacity: 0.2,
+	                stroke: true,
+	                strokeColor: 'ff0000',
+	                strokeOpacity: 1,
+	                strokeWidth: 1,
+	                alwaysOn: false
+	            };
 	        }
 
 	        /**
@@ -197,7 +229,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: '_drawHighlight',
 	        value: function _drawHighlight(canvas, shape, coords) {
 	            var context = canvas.getContext('2d');
-	            context.clearRect(0, 0, canvas.width, canvas.height);
+
 	            context.beginPath();
 	            switch (shape) {
 	                case 'circle':
@@ -215,7 +247,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	                default:
 	            }
 	            context.closePath();
+
+	            if (this.options.fill) {
+	                context.fillStyle = this.css3Colour(this.options.fillColor, this.options.fillOpacity);
+	                context.fill();
+	            }
+
+	            if (this.options.stroke) {
+	                context.strokeStyle = this.css3Colour(this.options.strokeColor, this.options.strokeOpacity);
+	                context.lineWidth = this.options.strokeWidth;
+	            }
+
 	            context.stroke();
+	        }
+
+	        /**
+	         * @param {String} hex
+	         * @returns {Number}
+	         */
+
+	    }, {
+	        key: 'hexToDecimal',
+	        value: function hexToDecimal(hex) {
+	            return Math.max(0, Math.min(parseInt(hex, 16), 255));
+	        }
+
+	        /**
+	         * @param {String} colour
+	         * @param {Number} opacity
+	         * @returns {String}
+	         */
+
+	    }, {
+	        key: 'css3Colour',
+	        value: function css3Colour(colour, opacity) {
+	            var r = +this.hexToDecimal(colour.substr(0, 2));
+	            var g = +this.hexToDecimal(colour.substr(2, 2));
+	            var b = +this.hexToDecimal(colour.substr(4, 2));
+
+	            return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + opacity + ')';
 	        }
 	    }]);
 

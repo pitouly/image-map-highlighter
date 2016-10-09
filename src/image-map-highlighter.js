@@ -3,9 +3,11 @@
 class ImageMapHighlighter {
     /**
      * @param {HTMLImageElement} element
+     * @param {Object} options
      */
-    constructor(element) {
+    constructor(element, options = {}) {
         this.element = element;
+        this.options = Object.assign({}, this._getDefaultOptions(), options);
     }
 
     /**
@@ -26,19 +28,44 @@ class ImageMapHighlighter {
         container.appendChild(this.element);
         container.insertBefore(canvas, this.element);
 
-        // Animate the canvas accordingly every time we hover over an image
-        // mapping.
-        map.addEventListener('mouseover', event => {
-            let coords = event.target.coords.split(',').map(coord => parseInt(coord));
-            let shape = event.target.shape;
+        if (this.options.alwaysOn) {
+            for (var i = 0; i < map.areas.length; i++) {
+                let area = map.areas[i];
 
-            this._drawHighlight(canvas, shape, coords);
-        });
+                let coords = area.coords.split(',').map(coord => parseInt(coord));
+                let shape = area.shape;
 
-        // Clear the canvas when we hover off a mapping.
-        map.addEventListener('mouseout', event => {
-            this._clearHighlights(canvas);
-        });
+                this._drawHighlight(canvas, shape, coords);
+            }
+        } else {
+            // Animate the canvas accordingly every time we hover over an image
+            // mapping.
+            map.addEventListener('mouseover', event => {
+                let coords = event.target.coords.split(',').map(coord => parseInt(coord));
+                let shape = event.target.shape;
+
+                this._clearHighlights(canvas);
+                this._drawHighlight(canvas, shape, coords);
+            });
+
+            // Clear the canvas when we hover off a mapping.
+            map.addEventListener('mouseout', event => {
+                this._clearHighlights(canvas);
+            });
+        }
+    }
+
+    _getDefaultOptions() {
+        return {
+            fill: true,
+            fillColor: '000000',
+            fillOpacity: 0.2,
+            stroke: true,
+            strokeColor: 'ff0000',
+            strokeOpacity: 1,
+            strokeWidth: 1,
+            alwaysOn: false
+        };
     }
 
     /**
@@ -112,7 +139,7 @@ class ImageMapHighlighter {
      */
     _drawHighlight(canvas, shape, coords) {
         let context = canvas.getContext('2d');
-        context.clearRect(0, 0, canvas.width, canvas.height);
+
         context.beginPath();
         switch (shape) {
             case 'circle':
@@ -130,7 +157,39 @@ class ImageMapHighlighter {
             default:
         }
         context.closePath();
+
+        if (this.options.fill) {
+            context.fillStyle = this.css3Colour(this.options.fillColor, this.options.fillOpacity);
+            context.fill();
+        }
+
+        if (this.options.stroke) {
+            context.strokeStyle = this.css3Colour(this.options.strokeColor, this.options.strokeOpacity);
+            context.lineWidth = this.options.strokeWidth;
+        }
+
         context.stroke();
+    }
+
+    /**
+     * @param {String} hex
+     * @returns {Number}
+     */
+    hexToDecimal(hex) {
+        return Math.max(0, Math.min(parseInt(hex, 16), 255));
+    }
+
+    /**
+     * @param {String} colour
+     * @param {Number} opacity
+     * @returns {String}
+     */
+    css3Colour(colour, opacity) {
+        let r = +this.hexToDecimal(colour.substr(0, 2));
+        let g = +this.hexToDecimal(colour.substr(2, 2));
+        let b = +this.hexToDecimal(colour.substr(4, 2));
+
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     }
 }
 
