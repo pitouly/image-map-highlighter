@@ -21,7 +21,7 @@ Initialise the highlighter using JavaScript.
 
 ```javascript
 var image = document.querySelector('.image');
-var highlighter = new ImageMapHighligher(image, {
+var highlighter = new ImageMapHighlighter(image, {
     strokeColor: 'ff0000',
     fill: true,
     fillColor: '00ff00'
