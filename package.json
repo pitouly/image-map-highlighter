@@ -3,6 +3,7 @@
   "description": "A dependency-free library to add visual highlights to image maps",
   "license": "Apache-2.0",
   "repository": "https://github.com/thaiphan/image-map-highlighter",
+  "version": "1.0.0",
   "devDependencies": {
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",
