@@ -265,9 +265,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (this.options.stroke) {
 	                context.strokeStyle = this.css3Colour(this.options.strokeColor, this.options.strokeOpacity);
 	                context.lineWidth = this.options.strokeWidth;
+	                context.stroke();
 	            }
-
-	            context.stroke();
 	        }
 
 	        /**
